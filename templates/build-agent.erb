@@ -1,0 +1,13 @@
+#!/bin/sh -
+# File is managed by Puppet
+
+### BEGIN INIT INFO
+# Provides:          build-agent
+# Required-Start:    $local_fs $syslog
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Build agent management script
+### END INIT INFO
+
+sudo -E -u teamcity <%= destination_dir %>/<%= agent_dir %>/bin/agent.sh "$@"
