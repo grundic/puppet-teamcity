@@ -12,10 +12,6 @@ class teamcity::agent(
     include users::people
     realize( Useraccount["$username"])
 
-    include app::unzip
-
-    include augeas
-
     wget::fetch { "teamcity-buildagent":
         source => "$download_url",
         destination => "/root/$archive_name",
