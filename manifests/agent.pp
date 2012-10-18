@@ -75,5 +75,6 @@ class teamcity::agent(
         ensure => running,
         enable => true,
         hasstatus => false,
+        require => Exec ["update-rc.d build-agent defaults"],
     }
 }
