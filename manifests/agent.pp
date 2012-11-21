@@ -7,6 +7,7 @@ class teamcity::agent(
     $download_url = $teamcity::params::download_url,
     $agent_dir = $teamcity::params::agent_dir,
     $destination_dir = $teamcity::params::destination_dir,
+    $priority =  $teamcity::params::priority,
     ) inherits teamcity::params {
 
     include users::people
@@ -57,6 +58,14 @@ class teamcity::agent(
         require => File["$destination_dir/$agent_dir/bin/"],
     }
 
+    file { "/etc/profile.d/${priority}-teamcity.sh":
+        owner   => "root",
+        group   => "root",
+        mode    => 755,
+        content => template("${module_name}/teamcity-profile.erb"),
+    }
+
+
     # init.d autostart
     exec { "update-rc.d build-agent defaults":
         cwd => "/etc/init.d/",
@@ -68,7 +77,7 @@ class teamcity::agent(
                     "/etc/rc5.d/S20build-agent",
                     "/etc/rc6.d/K20build-agent"
                    ],
-        require => File["/etc/init.d/build-agent"],
+        require => [ File["/etc/init.d/build-agent"], File["/etc/profile.d/${priority}-teamcity.sh"] ],
     }
 
     service { "build-agent":
