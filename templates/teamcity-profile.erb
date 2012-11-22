@@ -3,4 +3,4 @@
 # File is managed by puppet.
 #
 
-export TEAMCITY_AGENT_MEM_OPTS="-Xms2048m -Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"
+export TEAMCITY_AGENT_MEM_OPTS="<%= teamcity_agent_mem_opts %>"

@@ -7,4 +7,5 @@ class teamcity::params {
     $agent_dir = "build-agent"
     $destination_dir = "/var/tainted"
     $priority = "20"
+    $teamcity_agent_mem_opts = "-Xms2048m -Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"
 }

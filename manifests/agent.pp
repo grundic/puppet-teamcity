@@ -8,6 +8,7 @@ class teamcity::agent(
     $agent_dir = $teamcity::params::agent_dir,
     $destination_dir = $teamcity::params::destination_dir,
     $priority =  $teamcity::params::priority,
+    $teamcity_agent_mem_opts = $teamcity::params::teamcity_agent_mem_opts,
     ) inherits teamcity::params {
 
     include users::people
