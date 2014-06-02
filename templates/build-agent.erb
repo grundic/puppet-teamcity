@@ -10,4 +10,6 @@
 # Short-Description: Build agent management script
 ### END INIT INFO
 
-su --login -c "/var/tainted/build-agent/bin/agent.sh '$@'" teamcity
+export TEAMCITY_AGENT_MEM_OPTS="<%= @teamcity_agent_mem_opts %>"
+
+su --login -c "<%= @destination_dir %>/<%= @agent_dir %>/bin/agent.sh '$@'" <%= @agent_user %>
