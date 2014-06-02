@@ -85,6 +85,6 @@ class teamcity::agent (
     hasrestart => false,
   }
 
-  Wget['teamcity-buildagent'] -> File[$destination_dir] -> Exec['extract-build-agent'] -> File["${destination_dir}/${agent_dir}/bin/"
+  Wget::Fetch['teamcity-buildagent'] -> File[$destination_dir] -> Exec['extract-build-agent'] -> File["${destination_dir}/${agent_dir}/bin/"
     ] -> Augeas['buildAgent.properties'] -> File['/etc/init.d/build-agent'] -> Service['build-agent']
 }
