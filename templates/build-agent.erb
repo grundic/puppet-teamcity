@@ -12,4 +12,4 @@
 
 export TEAMCITY_AGENT_MEM_OPTS="<%= @teamcity_agent_mem_opts %>"
 
-su --login -c "<%= @destination_dir %>/<%= @agent_dir %>/bin/agent.sh '$@'" <%= @agent_user %>
+su --login -c "<%= @agent_dir %>/bin/agent.sh '$@'" <%= @agent_user %>

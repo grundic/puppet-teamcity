@@ -11,7 +11,6 @@ class teamcity::agent (
   $archive_name            = $teamcity::params::archive_name,
   $download_url            = $teamcity::params::download_url,
   $agent_dir               = $teamcity::params::agent_dir,
-  $destination_dir         = $teamcity::params::destination_dir,
   $teamcity_agent_mem_opts = $teamcity::params::teamcity_agent_mem_opts) inherits ::teamcity::params {
   if $manage_group {
     if !defined(Group[$agent_group]) {
@@ -30,7 +29,7 @@ class teamcity::agent (
     if !defined(User[$agent_user]) {
       user { $agent_user:
         ensure     => 'present',
-        home       => "${destination_dir}/${agent_dir}",
+        home       => $agent_dir,
         managehome => false,
         gid        => $agent_group,
         shell      => '/bin/sh',
@@ -47,17 +46,21 @@ class teamcity::agent (
     timeout     => 0,
   }
 
-  file { $destination_dir: ensure => 'directory', }
+  exec { "create ${agent_dir}":
+    path    => ['/usr/local/bin', '/usr/bin', '/bin'],
+    command => "mkdir -p ${agent_dir}",
+    creates => $agent_dir,
+  }
 
   exec { 'extract-build-agent':
-    command   => "unzip -d ${destination_dir}/${agent_dir} /tmp/${archive_name} && cp ${destination_dir}/${agent_dir}/conf/buildAgent.dist.properties ${destination_dir}/${agent_dir}/conf/buildAgent.properties && chown -R ${agent_user}:${agent_group} ${destination_dir}/${agent_dir}",
-    path      => '/usr/bin:/usr/sbin:/bin:/usr/local/bin:/opt/local/bin',
-    creates   => "${destination_dir}/${agent_dir}",
+    path      => ['/usr/local/bin', '/usr/bin', '/bin'],
+    command   => "unzip -d ${agent_dir} /tmp/${archive_name} && cp ${agent_dir}/conf/buildAgent.dist.properties ${agent_dir}/conf/buildAgent.properties && chown -R ${agent_user}:${agent_group} ${agent_dir}",
+    creates   => "${agent_dir}/conf",
     logoutput => 'on_failure',
   }
 
   # make 'bin' folder executable
-  file { "${destination_dir}/${agent_dir}/bin/":
+  file { "${agent_dir}/bin/":
     ensure  => 'present',
     mode    => '0755',
     recurse => true,
@@ -65,7 +68,7 @@ class teamcity::agent (
 
   augeas { 'buildAgent.properties':
     lens    => 'Properties.lns',
-    incl    => "${destination_dir}/${agent_dir}/conf/buildAgent.properties",
+    incl    => "${agent_dir}/conf/buildAgent.properties",
     changes => ["set name ${agent_name}", "set serverUrl ${server_url}"],
   }
 
@@ -85,6 +88,6 @@ class teamcity::agent (
     hasrestart => false,
   }
 
-  Wget::Fetch['teamcity-buildagent'] -> File[$destination_dir] -> Exec['extract-build-agent'] -> File["${destination_dir}/${agent_dir}/bin/"
-    ] -> Augeas['buildAgent.properties'] -> File['/etc/init.d/build-agent'] -> Service['build-agent']
+  Wget::Fetch['teamcity-buildagent'] -> Exec["create ${agent_dir}"] -> Exec['extract-build-agent'] -> File["${agent_dir}/bin/"] ->
+  Augeas['buildAgent.properties'] -> File['/etc/init.d/build-agent'] -> Service['build-agent']
 }
