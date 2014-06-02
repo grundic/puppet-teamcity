@@ -11,9 +11,6 @@ class teamcity::agent(
     $teamcity_agent_mem_opts = $teamcity::params::teamcity_agent_mem_opts,
     ) inherits teamcity::params {
 
-    include users::people
-    realize( Useraccount["$username"])
-
     wget::fetch { "teamcity-buildagent":
         source => "$download_url",
         destination => "/root/$archive_name",
