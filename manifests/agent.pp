@@ -12,7 +12,6 @@ class teamcity::agent (
   $download_url            = $teamcity::params::download_url,
   $agent_dir               = $teamcity::params::agent_dir,
   $destination_dir         = $teamcity::params::destination_dir,
-  $priority                = $teamcity::params::priority,
   $teamcity_agent_mem_opts = $teamcity::params::teamcity_agent_mem_opts) inherits ::teamcity::params {
   if $manage_group {
     if !defined(Group[$agent_group]) {
