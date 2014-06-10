@@ -1,8 +1,8 @@
 
 class teamcity::params {
   $agent_user              = 'teamcity'
-  $agent_user_home         = undef,
-  $manage_agent_user_home  = false,
+  $agent_user_home         = undef
+  $manage_agent_user_home  = false
   $agent_group             = 'teamcity'
   $manage_user             = false
   $manage_group            = false
