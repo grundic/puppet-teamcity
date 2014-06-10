@@ -2,6 +2,8 @@
 class teamcity::agent (
   $agent_name,
   $agent_user              = $teamcity::params::agent_user,
+  $agent_user_home         = $teamcity::params::agent_user_home,
+  $manage_agent_user_home  = $teamcity::params::manage_agent_user_home,
   $agent_group             = $teamcity::params::agent_group,
   $manage_user             = $teamcity::params::manage_user,
   $manage_group            = $teamcity::params::manage_group,
@@ -27,10 +29,15 @@ class teamcity::agent (
     }
 
     if !defined(User[$agent_user]) {
+      $agent_user_home_real = $agent_user_home ? {
+        undef   => $agent_dir,
+        default => $agent_user_home,
+      }
+
       user { $agent_user:
         ensure     => 'present',
-        home       => $agent_dir,
-        managehome => false,
+        home       => $agent_user_home,
+        managehome => $manage_agent_user_home,
         gid        => $agent_group,
         shell      => '/bin/sh',
         require    => $group_require,
