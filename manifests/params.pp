@@ -11,5 +11,6 @@ class teamcity::params {
   $download_url            = "${server_url}/update/${archive_name}"
   $agent_dir               = 'build-agent'
   $destination_dir         = '/var/tainted'
+  $agent_user_home         = "${destination_dir}/${agent_dir}"
   $teamcity_agent_mem_opts = '-Xms2048m -Xmx2048m -XX:+HeapDumpOnOutOfMemoryError'
 }
