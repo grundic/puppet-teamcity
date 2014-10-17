@@ -14,6 +14,15 @@ class teamcity::agent (
   $download_url            = $teamcity::params::download_url,
   $agent_dir               = $teamcity::params::agent_dir,
   $teamcity_agent_mem_opts = $teamcity::params::teamcity_agent_mem_opts) inherits ::teamcity::params {
+
+  if $::operatingsystem == 'Ubuntu' and $::operatingsystemrelease <= '12.04'{
+    file {"/usr/share/augeas/lenses/dist/properties.aug":
+      source => "puppet:///modules/${module_name}/properties.aug",
+      owner  => 'root',
+      group  => 'root',
+    }
+  }
+
   if $manage_group {
     if !defined(Group[$agent_group]) {
       group { $agent_group: ensure => 'present', }
