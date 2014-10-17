@@ -45,7 +45,7 @@ class teamcity::agent (
 
       user { $agent_user:
         ensure     => 'present',
-        home       => $agent_user_home,
+        home       => $agent_user_home_real,
         managehome => $manage_agent_user_home,
         gid        => $agent_group,
         shell      => '/bin/sh',
