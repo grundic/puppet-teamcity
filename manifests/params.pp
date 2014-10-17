@@ -12,5 +12,5 @@ class teamcity::params {
   $archive_name            = 'buildAgent.zip'
   $download_url            = "${server_url}/update/${archive_name}"
   $agent_dir               = '/opt/build-agent'
-  $teamcity_agent_mem_opts = '-Xms2048m -Xmx2048m -XX:+HeapDumpOnOutOfMemoryError'
+  $teamcity_agent_mem_opts = '-Xms2048m -Xmx2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8'
 }

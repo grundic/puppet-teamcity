@@ -66,7 +66,7 @@ class teamcity::agent (
     logoutput => 'on_failure',
   }
 
-  file {"agent-config":
+  file {'agent-config':
     path    => "${agent_dir}/conf/buildAgent.properties",
     ensure  => 'present',
     replace => 'no',
@@ -95,6 +95,12 @@ class teamcity::agent (
     changes => ["set name ${agent_name}", "set serverUrl ${server_url}"],
   }
 
+  augeas { 'wrapper.conf':
+    lens    => 'Properties.lns',
+    incl    => "${destination_dir}/${agent_dir}/launcher/conf/wrapper.conf",
+    changes => ['set wrapper.app.parameter.11 -Dfile.encoding=UTF-8'],
+  }
+
   # init.d script
   file { '/etc/init.d/build-agent':
     ensure  => 'present',
@@ -115,10 +121,11 @@ class teamcity::agent (
   User[$agent_user] ->
   Wget::Fetch['teamcity-buildagent'] ->
   Exec['extract-agent-archive'] ->
-  File["agent-config"] ->
+  File['agent-config'] ->
   Exec['chown-agent-dir'] ->
   File["${agent_dir}/bin/"] ->
   Augeas['buildAgent.properties'] ->
+  Augeas['wrapper.conf'] ->
   File['/etc/init.d/build-agent'] ->
   Service['build-agent']
 }
