@@ -13,7 +13,9 @@ class teamcity::agent (
   $archive_name            = $teamcity::params::archive_name,
   $download_url            = $teamcity::params::download_url,
   $agent_dir               = $teamcity::params::agent_dir,
-  $teamcity_agent_mem_opts = $teamcity::params::teamcity_agent_mem_opts) inherits ::teamcity::params {
+  $teamcity_agent_mem_opts = $teamcity::params::teamcity_agent_mem_opts,
+  $custom_properties       = $teamcity::params::custom_properties
+) inherits ::teamcity::params {
 
   Exec { path => [ '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/', '/usr/local/bin' ] }
 
@@ -93,6 +95,12 @@ class teamcity::agent (
     lens    => 'Properties.lns',
     incl    => "${agent_dir}/conf/buildAgent.properties",
     changes => ["set name ${agent_name}", "set serverUrl ${server_url}"],
+  }
+
+  augeas { 'buildAgent.properties-custom':
+    lens    => 'Properties.lns',
+    incl    => "${agent_dir}/conf/buildAgent.properties",
+    changes => suffix(prefix(join_keys_to_values($custom_properties, ' "'), 'set '), '"'),
   }
 
   augeas { 'wrapper.conf':
