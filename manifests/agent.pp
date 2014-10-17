@@ -15,8 +15,10 @@ class teamcity::agent (
   $agent_dir               = $teamcity::params::agent_dir,
   $teamcity_agent_mem_opts = $teamcity::params::teamcity_agent_mem_opts) inherits ::teamcity::params {
 
+  Exec { path => [ '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/', '/usr/local/bin' ] }
+
   if $::operatingsystem == 'Ubuntu' and $::operatingsystemrelease <= '12.04'{
-    file {"/usr/share/augeas/lenses/dist/properties.aug":
+    file {'/usr/share/augeas/lenses/dist/properties.aug':
       source => "puppet:///modules/${module_name}/properties.aug",
       owner  => 'root',
       group  => 'root',
@@ -26,8 +28,6 @@ class teamcity::agent (
   if $manage_group {
     if !defined(Group[$agent_group]) {
       group { $agent_group: ensure => 'present', }
-
-      Group[$agent_group] -> Exec['extract-build-agent']
     }
   }
 
@@ -52,8 +52,6 @@ class teamcity::agent (
         require    => $group_require,
       }
     }
-
-    User[$agent_user] -> Exec['extract-build-agent']
   }
 
   wget::fetch { 'teamcity-buildagent':
@@ -62,17 +60,26 @@ class teamcity::agent (
     timeout     => 0,
   }
 
-  exec { "create ${agent_dir}":
-    path    => ['/usr/local/bin', '/usr/bin', '/bin'],
-    command => "mkdir -p ${agent_dir}",
-    creates => $agent_dir,
-  }
-
-  exec { 'extract-build-agent':
-    path      => ['/usr/local/bin', '/usr/bin', '/bin'],
-    command   => "unzip -d ${agent_dir} /tmp/${archive_name} && cp ${agent_dir}/conf/buildAgent.dist.properties ${agent_dir}/conf/buildAgent.properties && chown -R ${agent_user}:${agent_group} ${agent_dir}",
+  exec { 'extract-agent-archive':
+    command   => "unzip /tmp/${archive_name} -d ${agent_dir}",
     creates   => "${agent_dir}/conf",
     logoutput => 'on_failure',
+  }
+
+  file {"agent-config":
+    path    => "${agent_dir}/conf/buildAgent.properties",
+    ensure  => 'present',
+    replace => 'no',
+    source  => "${agent_dir}/conf/buildAgent.dist.properties",
+    group   => $agent_group,
+    owner   => $agent_user
+  }
+
+  exec { 'chown-agent-dir':
+    command     => "chown -R ${agent_user}:${agent_group} ${agent_dir}",
+    subscribe   => Exec['extract-agent-archive'],
+    refreshonly => true,
+    logoutput   => 'on_failure',
   }
 
   # make 'bin' folder executable
@@ -94,7 +101,7 @@ class teamcity::agent (
     owner   => 'root',
     group   => 'root',
     mode    => '0755',
-    content => template('teamcity/build-agent.erb'),
+    content => template("${module_name}/build-agent.erb"),
   }
 
   service { 'build-agent':
@@ -104,6 +111,14 @@ class teamcity::agent (
     hasrestart => false,
   }
 
-  Wget::Fetch['teamcity-buildagent'] -> Exec["create ${agent_dir}"] -> Exec['extract-build-agent'] -> File["${agent_dir}/bin/"] ->
-  Augeas['buildAgent.properties'] -> File['/etc/init.d/build-agent'] -> Service['build-agent']
+  Group[$agent_group] ->
+  User[$agent_user] ->
+  Wget::Fetch['teamcity-buildagent'] ->
+  Exec['extract-agent-archive'] ->
+  File["agent-config"] ->
+  Exec['chown-agent-dir'] ->
+  File["${agent_dir}/bin/"] ->
+  Augeas['buildAgent.properties'] ->
+  File['/etc/init.d/build-agent'] ->
+  Service['build-agent']
 }
