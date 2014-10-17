@@ -1,0 +1,68 @@
+---
+accounts::dotfiles:
+  simple:
+    path: .simple
+    source: /etc/lsb-release
+  complex:
+    path: dir1/dir2/file.txt
+    content: "This is sample dotfile content\n"
+  complex2:
+    path: dir1/dir2/file2.txt
+    content: "File in the same folder\n"
+    mode: "660"
+  do_not_require_home:
+    path: some-file.txt
+    content: "This file will be created on second puppet run, after user home fact will be available\n" 
+    group: users
+    require_user: false
+
+
+accounts::groups:
+  foo:
+    gid: 1337
+  bar:
+    gid: 1338
+  baz:
+    gid: 1339
+
+accounts::users:
+  foo:
+    uid: 1337
+    comment: Foo
+    home: /home/foo
+  bar:
+    uid: 1338
+    comment: Bar
+    home: /home/bar
+  baz:
+    uid: 1339
+    comment: BaZ
+    home: /home/baz
+  some_user:
+    uid: 1441
+    comment: "Some user without defined `home`"
+
+# Create foo and bar accounts on every node
+accounts::accounts:
+  foo:
+    groups:
+      - foo
+    dotfiles:
+      - simple
+      - complex
+      - complex2
+  bar:
+    groups:
+      - baz
+    #  - bar
+    dotfiles:
+      - simple
+      - complex2
+  baz:
+    groups:
+      - baz
+  some_user:
+    groups:
+      - bar
+    dotfiles:
+      - "do_not_require_home"

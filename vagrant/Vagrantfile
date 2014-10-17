@@ -1,0 +1,30 @@
+# -*- mode: ruby -*-
+# # vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  {
+    # Here we can list as much boxes, as we need.
+    :Ubuntu1204_64 => {
+      :box     => 'precise64',
+      :box_url => 'http://files.vagrantup.com/precise64.box',
+    },
+    :Ubuntu1404_64 => {
+      :box     => 'puppetlabs/ubuntu-14.04-64-puppet',
+      :box_url => 'https://vagrantcloud.com/puppetlabs/ubuntu-14.04-64-puppet',
+    },
+
+  }.each do |name,cfg|
+    # Install Puppet 3
+    config.vm.provision :shell, :path => "upgrade-puppet.sh"
+
+    config.vm.define "#{name}-teamcity" do |teamcity|
+      # box configuration
+      teamcity.vm.box = cfg[:box]
+      teamcity.vm.box_url = cfg[:box_url]
+      teamcity.vm.hostname = name.to_s.gsub(/_/, '-').concat(".mail.msk")
+
+      teamcity.vm.synced_folder "../", "/home/vagrant/.puppet/modules/teamcity"
+      teamcity.vm.synced_folder "data", "/var/lib/hiera"
+    end
+  end
+end
