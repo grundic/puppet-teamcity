@@ -1,6 +1,6 @@
 
 class teamcity::agent (
-  $agent_name,
+  $agent_name              = $::teamcity::params::agent_name,
 
   $agent_user              = $::teamcity::params::agent_user,
   $agent_user_home         = $::teamcity::params::agent_user_home,

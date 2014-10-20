@@ -1,5 +1,6 @@
 
 class teamcity::params {
+  $agent_name              = $::hostname,
   $agent_user              = 'teamcity'
   $agent_user_home         = undef
   $manage_agent_user_home  = false
