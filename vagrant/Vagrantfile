@@ -25,6 +25,7 @@ Vagrant.configure("2") do |config|
 
       teamcity.vm.synced_folder "../", "/home/vagrant/.puppet/modules/teamcity"
       teamcity.vm.synced_folder "data", "/var/lib/hiera"
+      teamcity.vm.synced_folder "manifests", "/etc/puppet/manifests"
     end
   end
 end
