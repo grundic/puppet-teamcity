@@ -133,6 +133,7 @@ class teamcity::agent (
   Exec['chown-agent-dir'] ->
   File["${agent_dir}/bin/"] ->
   Augeas['buildAgent.properties'] ->
+  Augeas['buildAgent.properties-custom'] ->
   Augeas['wrapper.conf'] ->
   File['/etc/init.d/build-agent'] ->
   Service['build-agent']
