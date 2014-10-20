@@ -1,3 +1,5 @@
+sudo sed -i '/templatedir/c\' /etc/puppet/puppet.conf
+
 sudo puppet module install puppetlabs-stdlib
 sudo puppet module install maestrodev-wget
 sudo puppet apply /etc/puppet/manifests/site.pp --modulepath="/home/vagrant/.puppet/modules/:/etc/puppet/modules/"
