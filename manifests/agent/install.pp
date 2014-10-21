@@ -39,11 +39,8 @@ class teamcity::agent::install {
     require     => Exec['extract-agent-archive']
   }
 
-  # make 'bin' folder executable
-  file { "${agent_dir}/bin/":
-    ensure  => 'present',
+  file { "${agent_dir}/bin/agent.sh":
     mode    => '0755',
-    recurse => true,
     require => Exec['extract-agent-archive']
   }
 }
