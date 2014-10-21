@@ -1,30 +1,39 @@
-
+# PRIVATE CLASS: do not call directly
 class teamcity::account {
-  if $teamcity::manage_group {
-    if !defined(Group[$teamcity::agent_group]) {
-      group { $teamcity::agent_group: ensure => 'present', }
+  $agent_dir               = $teamcity::agent::agent_dir
+
+  $agent_user              = $teamcity::agent::agent_user
+  $agent_user_home         = $teamcity::agent::agent_user_home
+  $manage_agent_user_home  = $teamcity::agent::manage_agent_user_home
+  $agent_group             = $teamcity::agent::agent_group
+  $manage_user             = $teamcity::agent::manage_user
+  $manage_group            = $teamcity::agent::manage_group
+
+  if $manage_group {
+    if !defined(Group[$agent_group]) {
+      group { $agent_group: ensure => 'present', }
     }
   }
 
-  if $teamcity::manage_user {
-    $teamcity::group_require = $teamcity::manage_group ? {
-      true    => Group[$teamcity::agent_group],
+  if $manage_user {
+    $group_require = $manage_group ? {
+      true    => Group[$agent_group],
       default => undef,
     }
 
-    if !defined(User[$teamcity::agent_user]) {
-      $_agent_user_home_real = $teamcity::agent_user_home ? {
-        undef   => $teamcity::agent_dir,
-        default => $teamcity::agent_user_home,
+    if !defined(User[$agent_user]) {
+      $_agent_user_home_real = $agent_user_home ? {
+        undef   => $agent_dir,
+        default => $agent_user_home,
       }
 
-      user { $teamcity::agent_user:
+      user { $agent_user:
         ensure     => 'present',
         home       => $_agent_user_home_real,
-        managehome => $teamcity::manage_agent_user_home,
-        gid        => $teamcity::agent_group,
+        managehome => $manage_agent_user_home,
+        gid        => $agent_group,
         shell      => '/bin/sh',
-        require    => $teamcity::group_require,
+        require    => $group_require,
       }
     }
   }

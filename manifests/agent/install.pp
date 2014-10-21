@@ -1,37 +1,49 @@
-
+# PRIVATE CLASS: do not call directly
 class teamcity::agent::install {
+  $agent_user   = $teamcity::agent::agent_user
+  $agent_group  = $teamcity::agent::agent_group
+  $archive_name = $teamcity::agent::archive_name
+  $download_url = $teamcity::agent::download_url
+  $agent_dir    = $teamcity::agent::agent_dir
+
+  require teamcity::account
+
   wget::fetch { 'teamcity-buildagent':
-    source      => $teamcity::download_url,
-    destination => "/tmp/${teamcity::archive_name}",
+    source      => $download_url,
+    destination => "/tmp/${archive_name}",
     timeout     => 0,
   }
 
   exec { 'extract-agent-archive':
-    command   => "unzip /tmp/${teamcity::archive_name} -d ${teamcity::agent_dir}",
-    creates   => "${teamcity::agent_dir}/conf",
+    command   => "unzip /tmp/${archive_name} -d ${agent_dir}",
+    creates   => "${agent_dir}/conf",
     logoutput => 'on_failure',
+    require   => Wget::Fetch['teamcity-buildagent']
   }
 
   file {'agent-config':
     ensure  => 'present',
-    path    => "${teamcity::agent_dir}/conf/buildAgent.properties",
+    path    => "${agent_dir}/conf/buildAgent.properties",
     replace => 'no',
-    source  => "${teamcity::agent_dir}/conf/buildAgent.dist.properties",
-    group   => $teamcity::agent_group,
-    owner   => $teamcity::agent_user
+    source  => "${agent_dir}/conf/buildAgent.dist.properties",
+    group   => $agent_group,
+    owner   => $agent_user,
+    require => Exec['extract-agent-archive']
   }
 
   exec { 'chown-agent-dir':
-    command     => "chown -R ${teamcity::agent_user}:${teamcity::agent_group} ${teamcity::agent_dir}",
+    command     => "chown -R ${agent_user}:${agent_group} ${agent_dir}",
     subscribe   => Exec['extract-agent-archive'],
     refreshonly => true,
     logoutput   => 'on_failure',
+    require     => Exec['extract-agent-archive']
   }
 
   # make 'bin' folder executable
-  file { "${teamcity::agent_dir}/bin/":
+  file { "${agent_dir}/bin/":
     ensure  => 'present',
     mode    => '0755',
     recurse => true,
+    require => Exec['extract-agent-archive']
   }
 }

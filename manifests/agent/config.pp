@@ -1,5 +1,9 @@
-
+# PRIVATE CLASS: do not call directly
 class teamcity::agent::config {
+  $agent_name        = $teamcity::agent::agent_name
+  $agent_dir         = $teamcity::agent::agent_dir
+  $server_url        = $teamcity::agent::server_url
+  $custom_properties = $teamcity::agent::custom_properties
 
   if $::operatingsystem == 'Ubuntu' and $::operatingsystemrelease <= '12.04'{
     file {'/usr/share/augeas/lenses/dist/properties.aug':
@@ -11,20 +15,20 @@ class teamcity::agent::config {
 
   augeas { 'buildAgent.properties':
     lens    => 'Properties.lns',
-    incl    => "${teamcity::agent_dir}/conf/buildAgent.properties",
+    incl    => "${agent_dir}/conf/buildAgent.properties",
     changes => [
-      "set name ${teamcity::agent_name}",
-      "set serverUrl ${teamcity::server_url}"
+      "set name ${agent_name}",
+      "set serverUrl ${server_url}"
     ],
   }
 
   augeas { 'buildAgent.properties-custom':
     lens    => 'Properties.lns',
-    incl    => "${teamcity::agent_dir}/conf/buildAgent.properties",
+    incl    => "${agent_dir}/conf/buildAgent.properties",
     changes => suffix(
       prefix(
         join_keys_to_values(
-          $teamcity::custom_properties, ' "'
+          $custom_properties, ' "'
         ), 'set '
       ), '"'
     ),
@@ -32,7 +36,7 @@ class teamcity::agent::config {
 
   augeas { 'wrapper.conf':
     lens    => 'Properties.lns',
-    incl    => "${teamcity::agent_dir}/launcher/conf/wrapper.conf",
+    incl    => "${agent_dir}/launcher/conf/wrapper.conf",
     changes => ['set wrapper.app.parameter.11 -Dfile.encoding=UTF-8'],
   }
 
@@ -44,4 +48,6 @@ class teamcity::agent::config {
     mode    => '0755',
     content => template("${module_name}/build-agent.erb"),
   }
+
+  File['/usr/share/augeas/lenses/dist/properties.aug'] -> Augeas<||>
 }

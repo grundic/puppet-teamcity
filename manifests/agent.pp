@@ -24,21 +24,8 @@ class teamcity::agent (
 
   Exec { path => [ '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/', '/usr/local/bin' ] }
 
-  class {'teamcity::install':} ->
-  class {'teamcity::config':} ~>
-  class {'teamcity::service':} ~>
+  class {'::teamcity::agent::install':} ->
+  class {'::teamcity::agent::config':} ~>
+  class {'::teamcity::agent::service':} ->
   Class['teamcity::agent']
-
-  Group[$agent_group] ->
-  User[$agent_user] ->
-  Wget::Fetch['teamcity-buildagent'] ->
-  Exec['extract-agent-archive'] ->
-  File['agent-config'] ->
-  Exec['chown-agent-dir'] ->
-  File["${agent_dir}/bin/"] ->
-  Augeas['buildAgent.properties'] ->
-  Augeas['buildAgent.properties-custom'] ->
-  Augeas['wrapper.conf'] ->
-  File['/etc/init.d/build-agent'] ->
-  Service['build-agent']
 }
