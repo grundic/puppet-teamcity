@@ -31,13 +31,13 @@ start)
   fi
 
   log_daemon_msg "Starting the process" "$NAME"
-  sudo -H -u $USER /bin/bash --login -c "$DAEMON start" || log_end_msg 1
+  su --login -c "$DAEMON start" $USER || log_end_msg 1
 ;;
 stop)
   if [ -e $PIDFILE ]; then
     status_of_proc -p $PIDFILE $DAEMON "Stoppping the $NAME process" >/dev/null && status="0" || status="$?"
     if [ $status = "0" ]; then
-      sudo -H -u $USER /bin/bash --login -c "$DAEMON stop"
+      su --login -c "$DAEMON stop" $USER || log_end_msg 1
     else
       log_daemon_msg "$NAME process is not running"
       log_end_msg 0
