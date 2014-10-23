@@ -10,6 +10,52 @@
 # Short-Description: Build agent management script
 ### END INIT INFO
 
-export TEAMCITY_AGENT_MEM_OPTS="<%= @teamcity_agent_mem_opts %>"
+. /lib/lsb/init-functions
 
-su --login --preserve-environment --command "<%= @agent_dir %>/bin/agent.sh '$@'" <%= @agent_user %>
+NAME=build-agent
+DAEMON=<%= @agent_dir %>/bin/agent.sh
+PIDFILE=<%= @agent_dir %>/logs/buildAgent.pid
+USER=<%= @agent_user %>
+
+# If the daemon is not there, then exit.
+test -x $DAEMON || exit 5
+
+case $1 in
+start)
+  if [ -e $PIDFILE ]; then
+    status_of_proc -p $PIDFILE $DAEMON "$NAME process" >/dev/null && status="0" || status="$?"
+    if [ $status = "0" ]; then
+      log_daemon_msg "$NAME process is already running"
+      exit
+    fi
+  fi
+
+  log_daemon_msg "Starting the process" "$NAME"
+  sudo -H -u $USER /bin/bash --login -c "$DAEMON start" || log_end_msg 1
+;;
+stop)
+  if [ -e $PIDFILE ]; then
+    status_of_proc -p $PIDFILE $DAEMON "Stoppping the $NAME process" >/dev/null && status="0" || status="$?"
+    if [ $status = "0" ]; then
+      sudo -H -u $USER /bin/bash --login -c "$DAEMON stop"
+    else
+      log_daemon_msg "$NAME process is not running"
+      log_end_msg 0
+    fi
+  fi
+;;
+restart)
+  $0 stop && sleep 2 && $0 start
+  ;;
+status)
+  if [ -e $PIDFILE ]; then
+    status_of_proc -p $PIDFILE $DAEMON "$NAME process" && exit 0 || exit $?
+  else
+    log_daemon_msg "$NAME Process is not running"
+    log_end_msg 0
+  fi
+;;
+*)
+  echo "Usage: $0 {start|stop|restart|status}"
+  exit 2
+esac

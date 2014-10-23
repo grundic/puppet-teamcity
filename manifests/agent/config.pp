@@ -49,5 +49,13 @@ class teamcity::agent::config {
     content => template("${module_name}/build-agent.erb"),
   }
 
+
+  file { "/etc/profile.d/teamcity.sh":
+    owner   => "root",
+    group   => "root",
+    mode    => 755,
+    content => template("${module_name}/teamcity-profile.erb"),
+  }
+
   File['/usr/share/augeas/lenses/dist/properties.aug'] -> Augeas<||>
 }
