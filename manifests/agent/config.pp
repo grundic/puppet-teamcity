@@ -11,6 +11,7 @@ class teamcity::agent::config {
       owner  => 'root',
       group  => 'root',
     }
+    File['/usr/share/augeas/lenses/dist/properties.aug'] -> Augeas<||>
   }
 
   augeas { 'buildAgent.properties':
@@ -57,5 +58,4 @@ class teamcity::agent::config {
     content => template("${module_name}/teamcity-profile.erb"),
   }
 
-  File['/usr/share/augeas/lenses/dist/properties.aug'] -> Augeas<||>
 }
