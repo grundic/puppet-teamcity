@@ -11,6 +11,7 @@ class teamcity::agent::install {
   wget::fetch { 'teamcity-buildagent':
     source      => $download_url,
     destination => "/tmp/${archive_name}",
+    flags       => ['--no-proxy'],
     timeout     => 0,
   }
 
