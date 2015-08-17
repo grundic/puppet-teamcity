@@ -15,6 +15,8 @@ class teamcity::params {
 
   $service_ensure          = 'running'
   $service_enable          = true
-  $teamcity_agent_mem_opts = '-Xms2048m -Xmx2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8'
+  $service_run_type        = 'service'
+  $teamcity_agent_mem_opts = '-Xms512m -Xmx1024m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8'
   $custom_properties       = {}
+  $launcher_wrapper_conf   = {}
 }

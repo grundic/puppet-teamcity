@@ -1,61 +1,52 @@
 # PRIVATE CLASS: do not call directly
 class teamcity::agent::config {
-  $agent_name        = $teamcity::agent::agent_name
-  $agent_dir         = $teamcity::agent::agent_dir
-  $server_url        = $teamcity::agent::server_url
-  $custom_properties = $teamcity::agent::custom_properties
+  $agent_name              = $teamcity::agent::agent_name
+  $agent_dir               = $teamcity::agent::agent_dir
+  $server_url              = $teamcity::agent::server_url
+  $custom_properties       = $teamcity::agent::custom_properties
+  $launcher_wrapper_conf   = $teamcity::agent::launcher_wrapper_conf
+  $teamcity_agent_mem_opts = $teamcity::agent::teamcity_agent_mem_opts
 
-  if $::operatingsystem == 'Ubuntu' and $::operatingsystemrelease <= '12.04'{
-    file {'/usr/share/augeas/lenses/dist/properties.aug':
-      source => "puppet:///modules/${module_name}/properties.aug",
-      owner  => 'root',
-      group  => 'root',
+  $required_properties = {
+    'serverUrl' => $server_url,
+    'name'      => $agent_name
+  }
+
+  # configure buildAgent.properties
+  $merged_params = merge($required_properties, $custom_properties)
+  create_ini_settings(
+    {'' => $merged_params},
+    {'path' => "${agent_dir}/conf/buildAgent.properties" }
+  )
+
+  # configure launcher/conf/wrapper.conf
+  create_ini_settings(
+    {'' => $launcher_wrapper_conf},
+    {'path' => "${agent_dir}/launcher/conf/wrapper.conf"}
+  )
+
+  if $::kernel == 'windows' {
+    windows_env {'TEAMCITY_AGENT_MEM_OPTS':
+      ensure    => present,
+      value     => $teamcity_agent_mem_opts,
+      mergemode => clobber,
     }
-    File['/usr/share/augeas/lenses/dist/properties.aug'] -> Augeas<||>
   }
+  else {
+    # init.d script
+    file { '/etc/init.d/build-agent':
+      ensure  => 'present',
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0755',
+      content => template("${module_name}/build-agent.erb"),
+    }
 
-  augeas { 'buildAgent.properties':
-    lens    => 'Properties.lns',
-    incl    => "${agent_dir}/conf/buildAgent.properties",
-    changes => [
-      "set name ${agent_name}",
-      "set serverUrl ${server_url}"
-    ],
+    file { '/etc/profile.d/teamcity.sh':
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0755',
+      content => template("${module_name}/teamcity-profile.erb"),
+    }
   }
-
-  augeas { 'buildAgent.properties-custom':
-    lens    => 'Properties.lns',
-    incl    => "${agent_dir}/conf/buildAgent.properties",
-    changes => suffix(
-      prefix(
-        join_keys_to_values(
-          $custom_properties, ' "'
-        ), 'set '
-      ), '"'
-    ),
-  }
-
-  augeas { 'wrapper.conf':
-    lens    => 'Properties.lns',
-    incl    => "${agent_dir}/launcher/conf/wrapper.conf",
-    changes => ['set wrapper.app.parameter.11 -Dfile.encoding=UTF-8'],
-  }
-
-  # init.d script
-  file { '/etc/init.d/build-agent':
-    ensure  => 'present',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0755',
-    content => template("${module_name}/build-agent.erb"),
-  }
-
-
-  file { "/etc/profile.d/teamcity.sh":
-    owner   => "root",
-    group   => "root",
-    mode    => 755,
-    content => template("${module_name}/teamcity-profile.erb"),
-  }
-
 }

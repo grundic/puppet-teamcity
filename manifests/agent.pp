@@ -59,7 +59,10 @@
 #   String for configuring additional java parameters for build agent
 #
 # [*custom_properties*]
-#   Hash of custom properites, that will be applied to buildAgent.properites
+#   Hash of custom properties, that will be applied to conf/buildAgent.properties
+#
+# [*launcher_wrapper_conf*]
+#   Hash of custom properties, that will be applied to launcher/conf/wrapper.conf
 #
 #
 # === Examples
@@ -86,8 +89,10 @@ class teamcity::agent (
 
   $service_ensure          = $teamcity::params::service_ensure,
   $service_enable          = $teamcity::params::service_enable,
+  $service_run_type        = $teamcity::params::service_run_type,
   $teamcity_agent_mem_opts = $teamcity::params::teamcity_agent_mem_opts,
-  $custom_properties       = $teamcity::params::custom_properties
+  $custom_properties       = $teamcity::params::custom_properties,
+  $launcher_wrapper_conf   = $teamcity::params::launcher_wrapper_conf,
 ) inherits ::teamcity::params {
 
   validate_string($agent_name)
