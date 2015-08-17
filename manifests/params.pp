@@ -11,7 +11,13 @@ class teamcity::params {
   $server_url              = 'http://builder'
   $archive_name            = 'buildAgent.zip'
   $download_url            = "${server_url}/update/${archive_name}"
-  $agent_dir               = '/opt/build-agent'
+
+  if $::kernel == 'windows' {
+    $agent_dir               = 'C:/buildAgent'
+  }
+  else {
+    $agent_dir               = '/opt/build-agent'
+  }
 
   $service_ensure          = 'running'
   $service_enable          = true
