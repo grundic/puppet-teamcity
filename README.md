@@ -1,5 +1,6 @@
-## Overview
-This module installs and configures TeamCity build agent (https://www.jetbrains.com/teamcity)
+## Overview 
+![Transformation](https://raw.githubusercontent.com/grundic/puppet-teamcity/master/puppet-teamcity.gif?raw=true)
+This Puppet module installs and configures TeamCity build agent (https://www.jetbrains.com/teamcity).
 
 A TeamCity Build Agent is a piece of software which listens for the commands from the TeamCity
 server and starts the actual build processes. It is installed and configured separately from the
