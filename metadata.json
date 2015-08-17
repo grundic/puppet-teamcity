@@ -7,6 +7,7 @@
     "source": "https://github.com/grundic/puppet-teamcity",
     "project_page": "https://github.com/grundic/puppet-teamcity",
     "issues_url": "https://github.com/grundic/puppet-teamcity/issues",
+    tags: ["TeamCity", "Linux", "Windows", "CI"],
     "dependencies": [
         {
             "name": "puppetlabs-stdlib",
