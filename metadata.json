@@ -7,7 +7,54 @@
     "source": "https://github.com/grundic/puppet-teamcity",
     "project_page": "https://github.com/grundic/puppet-teamcity",
     "issues_url": "https://github.com/grundic/puppet-teamcity/issues",
-    tags: ["TeamCity", "Linux", "Windows", "CI"],
+    "tags": ["TeamCity", "Linux", "Windows", "CI"],
+    "operatingsystem_support": [
+{
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "4",
+        "5",
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "4",
+        "5",
+        "6",
+        "7"
+      ]
+    },
+{
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "12.04",
+        "14.04"
+      ]
+    },
+{
+      "operatingsystem": "Windows",
+      "operatingsystemrelease": [
+        "Server 2003",
+        "Server 2003 R2",
+        "Server 2008",
+        "Server 2008 R2",
+        "Server 2012",
+        "Server 2012 R2",
+        "7",
+        "8"
+      ]
+    }
+    ],
     "dependencies": [
         {
             "name": "puppetlabs-stdlib",
