@@ -10,11 +10,11 @@ class teamcity::agent::install {
 
   if $::kernel == 'windows' {
     $agent_dir_win = regsubst($agent_dir, '/', '\\', 'G')
-    $temp_dir_win = regsubst($temp_dir, '/', '\\', 'G')
+    $temp_dir_win = regsubst($::temp_dir, '/', '\\', 'G')
 
     download_file { 'Download Teamcity agent' :
       url                   => $download_url,
-      destination_directory => $temp_dir
+      destination_directory => $::temp_dir
     }
 
     file { $agent_dir:
@@ -41,7 +41,7 @@ class teamcity::agent::install {
   else {
     wget::fetch { 'teamcity-buildagent':
       source      => $download_url,
-      destination => "${temp_dir}/${archive_name}",
+      destination => "${::temp_dir}/${archive_name}",
       flags       => ['--no-proxy'],
       timeout     => 0,
     }
