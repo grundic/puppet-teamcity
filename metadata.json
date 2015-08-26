@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "author": "grundic",
     "summary": "Puppet module to install and configure Teamcity",
-    "license": "Apache 2.0",
+    "license": "Apache-2.0",
     "source": "https://github.com/grundic/puppet-teamcity",
     "project_page": "https://github.com/grundic/puppet-teamcity",
     "issues_url": "https://github.com/grundic/puppet-teamcity/issues",
