@@ -7,9 +7,14 @@
     "source": "https://github.com/grundic/puppet-teamcity",
     "project_page": "https://github.com/grundic/puppet-teamcity",
     "issues_url": "https://github.com/grundic/puppet-teamcity/issues",
-    "tags": ["TeamCity", "Linux", "Windows", "CI"],
+    "tags": [
+      "TeamCity",
+      "JetBrains",
+      "CI",
+      "Continues Integration"
+    ],
     "operatingsystem_support": [
-{
+    {
       "operatingsystem": "RedHat",
       "operatingsystemrelease": [
         "4",
@@ -27,7 +32,7 @@
         "7"
       ]
     },
-{
+    {
       "operatingsystem": "Debian",
       "operatingsystemrelease": [
         "6",
@@ -41,7 +46,7 @@
         "14.04"
       ]
     },
-{
+    {
       "operatingsystem": "Windows",
       "operatingsystemrelease": [
         "Server 2003",
