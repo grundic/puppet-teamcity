@@ -49,7 +49,7 @@ class teamcity::agent::config {
       content => template("${module_name}/teamcity-profile.erb"),
     }
     # systemd compatible
-    file { ' /lib/systemd/system/build-agent.service':
+    file { '/lib/systemd/system/build-agent.service':
       owner   => 'root',
       group   => 'root',
       mode    => '0755',
