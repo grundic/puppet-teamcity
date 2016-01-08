@@ -1,6 +1,7 @@
 # PRIVATE CLASS: do not call directly
 class teamcity::agent::config {
   $agent_name              = $teamcity::agent::agent_name
+  $agent_user              = $teamcity::agent::agent_user
   $agent_dir               = $teamcity::agent::agent_dir
   $server_url              = $teamcity::agent::server_url
   $custom_properties       = $teamcity::agent::custom_properties
