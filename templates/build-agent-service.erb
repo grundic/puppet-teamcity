@@ -1,0 +1,11 @@
+# File is managed by Puppet
+
+[Unit]
+Description=TeamCity build agent
+
+[Service]
+User=<%= @agent_user %>
+ExecStart=<%= @agent_dir %>/bin/agent.sh run
+
+[Install]
+WantedBy=multi-user.target
