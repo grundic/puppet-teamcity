@@ -7,6 +7,7 @@ class teamcity::agent::config {
   $custom_properties       = $teamcity::agent::custom_properties
   $launcher_wrapper_conf   = $teamcity::agent::launcher_wrapper_conf
   $teamcity_agent_mem_opts = $teamcity::agent::teamcity_agent_mem_opts
+  $service_run_type        = $teamcity::agent::service_run_type
 
   $required_properties = {
     'serverUrl' => $server_url,
@@ -34,13 +35,25 @@ class teamcity::agent::config {
     }
   }
   else {
-    # init.d script
-    file { '/etc/init.d/build-agent':
-      ensure  => 'present',
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0755',
-      content => template("${module_name}/build-agent.erb"),
+    case $service_run_type {
+      'init': {
+        file { '/etc/init.d/build-agent':
+          ensure  => 'present',
+          owner   => 'root',
+          group   => 'root',
+          mode    => '0755',
+          content => template("${module_name}/build-agent.erb"),
+        }
+      }
+      'systemd': {
+        file { '/lib/systemd/system/build-agent.service':
+          ensure  => 'present',
+          owner   => 'root',
+          group   => 'root',
+          mode    => '0755',
+          content => template("${module_name}/build-agent-service.erb"),
+        }
+      }
     }
 
     file { '/etc/profile.d/teamcity.sh':
@@ -48,13 +61,6 @@ class teamcity::agent::config {
       group   => 'root',
       mode    => '0755',
       content => template("${module_name}/teamcity-profile.erb"),
-    }
-    # systemd compatible
-    file { '/lib/systemd/system/build-agent.service':
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0755',
-      content => template("${module_name}/build-agent-service.erb"),
     }
   }
 }
