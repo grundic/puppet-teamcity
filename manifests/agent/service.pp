@@ -52,7 +52,11 @@ class teamcity::agent::service {
       enable     => $service_enable,
       hasstatus  => true,
       hasrestart => true,
-      require    => File['/etc/init.d/build-agent']
+      provider   => $service_run_type,
+      require    => $service_run_type ? {
+        'init' => File['/etc/init.d/build-agent'],
+        'systemd' => File['/lib/systemd/system/build-agent.service'],
+      }
     }
   }
 }
