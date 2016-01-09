@@ -56,8 +56,8 @@
 #   Defaults to `true`.
 #
 # [*service_run_type*]
-#   Daemon type init or systemd
-#   Defaults to `init`.
+#   Service type
+#   On windows defaults to `service`, on Linux defaults to `init`.
 #
 # [*teamcity_agent_mem_opts*]
 #   String for configuring additional java parameters for build agent
