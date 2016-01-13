@@ -2,14 +2,10 @@
 
 [Unit]
 Description=TeamCity build agent
-After=network.target
 
 [Service]
-Type=forking
 User=<%= @agent_user %>
-PIDFile=<%= @agent_dir %>/logs/buildAgent.pid
 ExecStart=<%= @agent_dir %>/bin/agent.sh start
-ExecStop=<%= @agent_dir %>/bin/agent.sh stop
 
 [Install]
 WantedBy=multi-user.target
