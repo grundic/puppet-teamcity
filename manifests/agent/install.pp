@@ -47,7 +47,7 @@ class teamcity::agent::install {
     }
 
     exec { 'extract-agent-archive':
-      command   => "unzip ${::temp_dir}${archive_name} -d ${agent_dir}",
+      command   => "unzip ${::temp_dir}/${archive_name} -d ${agent_dir}",
       creates   => "${agent_dir}/conf",
       logoutput => 'on_failure',
       require   => Wget::Fetch['teamcity-buildagent']
