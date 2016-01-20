@@ -26,10 +26,9 @@ class teamcity::params {
   }
   else {
     if versioncmp($::operatingsystemmajrelease, '7') >= 0 {
-        $service_run_type = 'systemd'
-      } else {
-        $service_run_type = 'init'
-      }
+      $service_run_type = 'systemd'
+    } else {
+      $service_run_type = 'init'
     }
   }
   $teamcity_agent_mem_opts = '-Xms512m -Xmx1024m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8'
