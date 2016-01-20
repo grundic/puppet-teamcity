@@ -96,7 +96,8 @@ standalone mode the shortcut is created in Startup forlder of specified
 user. This mode is required in some cases to overcome service's
 shortcomings (it could interact with desktop, so, it could not for
 example create direct3d device).
-Default on Windows is `service` and on Linux `init`.
+Default on Windows is `service` and on Linux `init` or `systemd` depending
+on your OS version.
 
 ####`teamcity_agent_mem_opts`
 String for configuring additional java parameters for build agent.
