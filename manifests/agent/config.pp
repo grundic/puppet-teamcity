@@ -2,12 +2,20 @@
 class teamcity::agent::config {
   $agent_name              = $teamcity::agent::agent_name
   $agent_user              = $teamcity::agent::agent_user
-  $agent_dir               = $teamcity::agent::agent_dir
+  $agent_user_home         = $teamcity::agent::agent_user_home
+  $manage_agent_user_home  = $teamcity::agent::manage_agent_user_home
+  $agent_group             = $teamcity::agent::agent_group
+  $manage_group            = $teamcity::agent::manage_group
   $server_url              = $teamcity::agent::server_url
+  $archive_name            = $teamcity::agent::archive_name
+  $download_url            = $teamcity::agent::download_url
+  $agent_dir               = $teamcity::agent::agent_dir
+  $service_ensure          = $teamcity::agent::service_ensure
+  $service_enable          = $teamcity::agent::agent_dir
+  $service_run_type        = $teamcity::agent::service_run_type
   $custom_properties       = $teamcity::agent::custom_properties
   $launcher_wrapper_conf   = $teamcity::agent::launcher_wrapper_conf
   $teamcity_agent_mem_opts = $teamcity::agent::teamcity_agent_mem_opts
-  $service_run_type        = $teamcity::agent::service_run_type
 
   $required_properties = {
     'serverUrl' => $server_url,
