@@ -1,7 +1,6 @@
 # PRIVATE CLASS: do not call directly
 class teamcity::account {
   $agent_dir               = $teamcity::agent::agent_dir
-
   $agent_user              = $teamcity::agent::agent_user
   $agent_user_home         = $teamcity::agent::agent_user_home
   $manage_agent_user_home  = $teamcity::agent::manage_agent_user_home

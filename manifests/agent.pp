@@ -55,6 +55,10 @@
 #   Should the service be enabled
 #   Defaults to `true`.
 #
+# [*service_run_type*]
+#   Service type
+#   On windows defaults to `service`, on Linux defaults to `init`.
+#
 # [*teamcity_agent_mem_opts*]
 #   String for configuring additional java parameters for build agent
 #
