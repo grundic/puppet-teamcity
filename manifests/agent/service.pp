@@ -59,13 +59,13 @@ class teamcity::agent::service {
       provider   => $service_run_type,
       require    => $service_run_type_file,
     }
-    if $service_run_type == "systemd" {
-      exec { "systemd_reload":
+    if $service_run_type == 'systemd' {
+      exec { 'systemd_reload':
         command     => '/bin/systemctl daemon-reload',
         refreshonly => true,
       }
     }else{
-      file { "/lib/systemd/system/build-agent.service":
+      file { '/lib/systemd/system/build-agent.service':
         ensure  => absent,
       }
     }
