@@ -25,7 +25,7 @@ class teamcity::params {
     $service_run_type        = 'service'
   }
   else {
-    if versioncmp($::operatingsystemmajrelease, '7') >= 0 {
+    if( ($::os.name == "Debian" && versioncmp($::operatingsystemmajrelease, '7') >= 0) || ($::os.name == "Ubuntu" && versioncmp($::operatingsystemmajrelease, '15.04') >= 0) ){
       $service_run_type = 'systemd'
     } else {
       $service_run_type = 'init'
