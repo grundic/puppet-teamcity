@@ -62,6 +62,9 @@ class teamcity::agent::config {
           content => template("${module_name}/build-agent-service.erb"),
         }
       }
+      default: {
+        fail("Unexpected service run type ${::service_run_type}!")
+      }
     }
 
     file { '/etc/profile.d/teamcity.sh':
