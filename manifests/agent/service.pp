@@ -47,10 +47,6 @@ class teamcity::agent::service {
     }
   }
   else {
-    $service_run_type_file = $service_run_type ? {
-      'init' => File['/etc/init.d/build-agent'],
-      'systemd' => File['/lib/systemd/system/build-agent.service'],
-    }
     if $service_run_type == 'systemd' {
       service { 'build-agent':
         ensure     => $service_ensure,
@@ -58,7 +54,7 @@ class teamcity::agent::service {
         hasstatus  => true,
         hasrestart => true,
         provider   => $service_run_type,
-        require    => $service_run_type_file,
+        require    => File['/lib/systemd/system/build-agent.service'],
       }
       exec { 'systemd_reload':
         command     => '/bin/systemctl daemon-reload',
@@ -73,7 +69,7 @@ class teamcity::agent::service {
         enable     => $service_enable,
         hasstatus  => true,
         hasrestart => true,
-        require    => $service_run_type_file
+        require    => File['/etc/init.d/build-agent']
       }
       file { '/lib/systemd/system/build-agent.service':
         ensure  => absent,
