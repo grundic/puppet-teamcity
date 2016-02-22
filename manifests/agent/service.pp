@@ -1,33 +1,27 @@
 # PRIVATE CLASS: do not call directly
 class teamcity::agent::service {
-  $agent_dir         = $teamcity::agent::agent_dir
-  $service_ensure    = $teamcity::agent::service_ensure
-  $service_enable    = $teamcity::agent::service_enable
-  $service_run_type  = $teamcity::agent::service_run_type
-  $agent_user        = $teamcity::agent::agent_user
-
   if $::kernel == 'windows' {
-    $agent_dir_win = regsubst($agent_dir, '/', '\\', 'G')
-    $shortcut_path = "C:\\Users\\${agent_user}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\TeamCity.lnk"
+    $agent_dir_win = regsubst($::teamcity::agent_dir, '/', '\\', 'G')
+    $shortcut_path = "C:\\Users\\${::teamcity::agent_user}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\TeamCity.lnk"
 
-    if $service_run_type == 'service' {
+    if $::teamcity::service_run_type == 'service' {
       exec { 'install-teamcity-agent-service':
         path    => $::path,
-        command => "\"${agent_dir}\\launcher\\bin\\TeamCityAgentService-windows-x86-32.exe\" --install ${agent_dir}\\launcher\\conf\\wrapper.conf",
+        command => "\"${::teamcity::agent_dir}\\launcher\\bin\\TeamCityAgentService-windows-x86-32.exe\" --install ${::teamcity::agent_dir}\\launcher\\conf\\wrapper.conf",
         unless  => 'sc query "TCBuildAgent"'
       }
 
       service { 'TCBuildAgent':
-        ensure  => $service_ensure,
-        enable  => $service_enable,
+        ensure  => $::teamcity::service_ensure,
+        enable  => $::teamcity::service_enable,
         require => Exec['install-teamcity-agent-service'],
       }
 
-      file {$shortcut_path:
+      file { $shortcut_path:
         ensure => absent
       }
     }
-    elsif $service_run_type == 'standalone' {
+    elsif $::teamcity::service_run_type == 'standalone' {
       exec { 'create-teamcity-agent-shortcut':
         command   => template("${module_name}/create-shortcut.ps1"),
         creates   => $shortcut_path,
@@ -43,17 +37,17 @@ class teamcity::agent::service {
       }
     }
     else {
-      fail('$service_run_type must be either service or standalone')
+      fail("'service_run_type' must be either 'service' or 'standalone', but received '${::teamcity::service_run_type}'!")
     }
   }
   else {
-    if $service_run_type == 'systemd' {
+    if $::teamcity::service_run_type == 'systemd' {
       service { 'build-agent':
-        ensure     => $service_ensure,
-        enable     => $service_enable,
+        ensure     => $::teamcity::service_ensure,
+        enable     => $::teamcity::service_enable,
         hasstatus  => true,
         hasrestart => true,
-        provider   => $service_run_type,
+        provider   => $::teamcity::service_run_type,
         require    => File['/lib/systemd/system/build-agent.service'],
       }
       exec { 'systemd_reload':
@@ -63,10 +57,10 @@ class teamcity::agent::service {
       file { '/etc/init.d/build-agent':
         ensure  => absent,
       }
-    }elsif $service_run_type == 'init' {
+    } elsif $::teamcity::service_run_type == 'init' {
       service { 'build-agent':
-        ensure     => $service_ensure,
-        enable     => $service_enable,
+        ensure     => $::teamcity::service_ensure,
+        enable     => $::teamcity::service_enable,
         hasstatus  => true,
         hasrestart => true,
         require    => File['/etc/init.d/build-agent']

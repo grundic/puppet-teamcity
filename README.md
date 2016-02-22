@@ -10,11 +10,11 @@ machine (the latter is a preferred setup for server performance reasons).
 ## Usage
 Here is an example how to use this module:
 ```puppet
-include '::teamcity::agent'
+include '::teamcity'
 ```
 Here is sample of usage with some parameters:
 ```puppet
-class {'::teamcity::agent':
+class {'::teamcity':
   agent_name            => 'sample-build-agent',
   manage_user           => true,
   manage_group          => true,
@@ -29,9 +29,9 @@ class {'::teamcity::agent':
 
 Also you can parametrize class from hiera:
 ```yaml
-teamcity::agent::agent_name: sample-build-agent
-teamcity::agent::agent_dir: /var/tainted/build-agent
-teamcity::agent::custom_properties:
+teamcity::agent_name: sample-build-agent
+teamcity::agent_dir: /var/tainted/build-agent
+teamcity::custom_properties:
   "system.teamcity.idea.home": "%system.agent.home.dir%/tools/idea"
 ```
 

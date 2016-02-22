@@ -10,7 +10,7 @@ class teamcity::params {
 
   $server_url              = 'http://builder'
   $archive_name            = 'buildAgent.zip'
-  $download_url            = "${server_url}/update/${archive_name}"
+  $download_url            = undef
 
   if $::kernel == 'windows' {
     $agent_dir               = 'C:/buildAgent'
@@ -25,13 +25,13 @@ class teamcity::params {
     $service_run_type        = 'service'
   }
   else {
-    if ($::operatingsystem == "Debian" and versioncmp($::operatingsystemmajrelease, '7') >= 0) or ($::operatingsystem == "Ubuntu" and versioncmp($::operatingsystemmajrelease, '15.04') >= 0) {
+    if ($::operatingsystem == 'Debian' and versioncmp($::operatingsystemmajrelease, '7') >= 0) or ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemmajrelease, '15.04') >= 0) {
       $service_run_type = 'systemd'
     } else {
       $service_run_type = 'init'
     }
   }
   $teamcity_agent_mem_opts = '-Xms512m -Xmx1024m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8'
-  $custom_properties       = {}
-  $launcher_wrapper_conf   = {}
+  $custom_properties       = { }
+  $launcher_wrapper_conf   = { }
 }

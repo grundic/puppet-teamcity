@@ -1,49 +1,32 @@
 # PRIVATE CLASS: do not call directly
 class teamcity::agent::config {
-  $agent_name              = $teamcity::agent::agent_name
-  $agent_user              = $teamcity::agent::agent_user
-  $agent_user_home         = $teamcity::agent::agent_user_home
-  $manage_agent_user_home  = $teamcity::agent::manage_agent_user_home
-  $agent_group             = $teamcity::agent::agent_group
-  $manage_group            = $teamcity::agent::manage_group
-  $server_url              = $teamcity::agent::server_url
-  $archive_name            = $teamcity::agent::archive_name
-  $download_url            = $teamcity::agent::download_url
-  $agent_dir               = $teamcity::agent::agent_dir
-  $service_ensure          = $teamcity::agent::service_ensure
-  $service_enable          = $teamcity::agent::agent_dir
-  $service_run_type        = $teamcity::agent::service_run_type
-  $custom_properties       = $teamcity::agent::custom_properties
-  $launcher_wrapper_conf   = $teamcity::agent::launcher_wrapper_conf
-  $teamcity_agent_mem_opts = $teamcity::agent::teamcity_agent_mem_opts
-
   $required_properties = {
-    'serverUrl' => $server_url,
-    'name'      => $agent_name
+    'serverUrl' => $::teamcity::server_url,
+    'name'      => $::teamcity::agent_name
   }
 
   # configure buildAgent.properties
-  $merged_params = merge($required_properties, $custom_properties)
+  $merged_params = merge($required_properties, $::teamcity::custom_properties)
   create_ini_settings(
-    {'' => $merged_params},
-    {'path' => "${agent_dir}/conf/buildAgent.properties" }
+    { '' => $merged_params },
+    { 'path' => "${::teamcity::agent_dir}/conf/buildAgent.properties" }
   )
 
   # configure launcher/conf/wrapper.conf
   create_ini_settings(
-    {'' => $launcher_wrapper_conf},
-    {'path' => "${agent_dir}/launcher/conf/wrapper.conf"}
+    { '' => $::teamcity::launcher_wrapper_conf },
+    { 'path' => "${::teamcity::agent_dir}/launcher/conf/wrapper.conf" }
   )
 
   if $::kernel == 'windows' {
-    windows_env {'TEAMCITY_AGENT_MEM_OPTS':
+    windows_env { 'TEAMCITY_AGENT_MEM_OPTS':
       ensure    => present,
-      value     => $teamcity_agent_mem_opts,
+      value     => $::teamcity::teamcity_agent_mem_opts,
       mergemode => clobber,
     }
   }
   else {
-    case $service_run_type {
+    case $::teamcity::service_run_type {
       'init': {
         file { '/etc/init.d/build-agent':
           ensure  => 'present',
@@ -63,7 +46,7 @@ class teamcity::agent::config {
         }
       }
       default: {
-        fail("Unexpected service run type ${::service_run_type}!")
+        fail("Unexpected service run type '${::teamcity::service_run_type}'!")
       }
     }
 
