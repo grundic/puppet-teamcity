@@ -1,2 +1,13 @@
 **/.vagrant
+*.lock
 pkg/
+.bundle
+.vendor
+.vagrant
+.ruby-version
+log
+spec/fixtures/manifests
+spec/fixtures/modules
+spec/reports/
+spec/logs
+
