@@ -8,9 +8,5 @@ fixtures:
       branch: '1.4.x'
     wget:
       repo: git://github.com/maestrodev/puppet-wget.git
-    download_file:
-      repo: git://github.com/voxpupuli/puppet-download_file
-#    windows_env:
-#      repo: git://github.com/badgerious/puppet-windows-env.git
   symlinks:
     teamcity: "#{source_dir}"
