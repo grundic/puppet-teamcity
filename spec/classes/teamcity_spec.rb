@@ -2,6 +2,8 @@ require 'spec_helper'
 
 describe 'teamcity', :type => 'class' do
 
+  default_params = {}
+
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       context 'main class tests' do
@@ -42,6 +44,48 @@ describe 'teamcity', :type => 'class' do
           with('mode' => '0755').
           that_requires('Exec[extract-agent-archive]')
         }
+      end
+
+      context 'configuration class tests' do
+
+        # TODO: how to check for a function call `create_ini_settings`?
+
+        context 'with init.d system' do
+          let (:params) { default_params.merge({:service_run_type => 'init'})}
+          it { should contain_file('/etc/init.d/build-agent').with(
+            'ensure' => 'present',
+            'content' => /File is managed by Puppet/
+          )}
+          it { should contain_file('/lib/systemd/system/build-agent.service').with(
+            'ensure' => 'absent'
+          )}
+
+          it 'should render init template' do
+            harness = TemplateHarness.new('templates/build-agent.erb', params)
+            harness.set('@agent_dir', '/opt/build-agent')
+            result = harness.run
+            expect(result).to match /\/opt\/build-agent\/bin\/agent\.sh/
+          end
+        end
+
+        context 'with systemd system' do
+          let (:params) { default_params.merge({:service_run_type => 'systemd'})}
+          it { should contain_file('/lib/systemd/system/build-agent.service').with(
+            'ensure' => 'present'
+          )}
+          it { should contain_file('/etc/init.d/build-agent').with(
+            'ensure' => 'absent'
+          )}
+
+          it 'should render systemd template' do
+            harness = TemplateHarness.new('templates/build-agent-service.erb', params)
+            harness.set('@agent_dir', '/opt/build-agent')
+            result = harness.run
+            expect(result).to match /ExecStart=\/opt\/build-agent\/bin\/agent\.sh start/
+          end
+        end
+
+        it { should contain_file('/etc/profile.d/teamcity.sh')}
       end
 
     end
