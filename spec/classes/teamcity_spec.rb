@@ -51,14 +51,14 @@ describe 'teamcity', :type => 'class' do
         # TODO: how to check for a function call `create_ini_settings`?
 
         context 'with init.d system' do
-          let (:params) { default_params.merge({:service_run_type => 'init'})}
+          let (:params) { default_params.merge({:service_run_type => 'init'}) }
           it { should contain_file('/etc/init.d/build-agent').with(
             'ensure' => 'present',
             'content' => /File is managed by Puppet/
-          )}
+          ) }
           it { should contain_file('/lib/systemd/system/build-agent.service').with(
             'ensure' => 'absent'
-          )}
+          ) }
 
           it 'should render init template' do
             harness = TemplateHarness.new('templates/build-agent.erb', params)
@@ -69,13 +69,19 @@ describe 'teamcity', :type => 'class' do
         end
 
         context 'with systemd system' do
-          let (:params) { default_params.merge({:service_run_type => 'systemd'})}
+          let (:params) { default_params.merge({:service_run_type => 'systemd'}) }
           it { should contain_file('/lib/systemd/system/build-agent.service').with(
-            'ensure' => 'present'
-          )}
+            'ensure' => 'present',
+            'owner' => 'root',
+            'group' => 'root',
+            'mode' => '0755',
+            'content' => /Description=TeamCity Build Agent/
+          ).
+            that_notifies('Exec[systemd_reload]')
+          }
           it { should contain_file('/etc/init.d/build-agent').with(
             'ensure' => 'absent'
-          )}
+          ) }
 
           it 'should render systemd template' do
             harness = TemplateHarness.new('templates/build-agent-service.erb', params)
@@ -85,9 +91,55 @@ describe 'teamcity', :type => 'class' do
           end
         end
 
-        it { should contain_file('/etc/profile.d/teamcity.sh')}
+        it { should contain_file('/etc/profile.d/teamcity.sh').with(
+          'owner' => 'root',
+          'group' => 'root',
+          'mode' => '0755',
+          'content' => /export TEAMCITY_AGENT_MEM_OPTS=/
+        ) }
       end
 
+      context 'service class tests' do
+        context 'with init.d system' do
+          let (:params) { default_params.merge({:service_run_type => 'init'}) }
+
+          it { should contain_service('build-agent').with(
+            'ensure' => 'running',
+            'enable' => true,
+            'provider' => nil
+          ).
+            that_requires('File[/etc/init.d/build-agent]')
+          }
+
+          it { should contain_file('/lib/systemd/system/build-agent.service').with(
+            'ensure' => 'absent'
+          ) }
+        end
+
+        context 'with systemd system' do
+          let (:params) { default_params.merge({:service_run_type => 'systemd'}) }
+
+          it { should contain_service('build-agent').with(
+            'ensure' => 'running',
+            'enable' => true,
+            'provider' => 'systemd'
+          ).
+            that_requires('File[/lib/systemd/system/build-agent.service]')
+          }
+
+          it { should contain_exec('systemd_reload').with(
+            'command' => '/bin/systemctl daemon-reload',
+            'refreshonly' => true
+          ).
+            that_subscribes_to('File[/lib/systemd/system/build-agent.service]')
+          }
+
+          it { should contain_file('/etc/init.d/build-agent').with(
+            'ensure' => 'absent'
+          ) }
+        end
+
+      end
     end
   end
 end

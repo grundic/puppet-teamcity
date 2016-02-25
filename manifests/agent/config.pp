@@ -43,6 +43,7 @@ class teamcity::agent::config {
           group   => 'root',
           mode    => '0755',
           content => template("${module_name}/build-agent-service.erb"),
+          notify  => Exec["systemd_reload"]
         }
       }
       default: {
