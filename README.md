@@ -107,3 +107,11 @@ Hash of custom properties, that will be applied to conf/buildAgent.properties
 
 ####`launcher_wrapper_conf`
 Hash of custom properties, that will be applied to launcher/conf/wrapper.conf
+
+
+## Development
+
+Clean host
+```
+sudo service build-agent stop; sudo userdel --force --remove teamcity; sudo rm -rf /etc/init.d/build-agent /lib/systemd/system/build-agent.service /opt/build-agent/
+```
