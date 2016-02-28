@@ -87,7 +87,7 @@ class teamcity (
 
   $service_ensure          = $teamcity::params::service_ensure,
   $service_enable          = $teamcity::params::service_enable,
-  $service_run_type        = $teamcity::params::service_run_type,
+  $service_provider        = $teamcity::params::service_provider,
   $teamcity_agent_mem_opts = $teamcity::params::teamcity_agent_mem_opts,
   $custom_properties       = $teamcity::params::custom_properties,
   $launcher_wrapper_conf   = $teamcity::params::launcher_wrapper_conf,

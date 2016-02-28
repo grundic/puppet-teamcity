@@ -2,7 +2,7 @@
 class teamcity::agent::config {
   $required_properties = {
     'serverUrl' => $::teamcity::server_url,
-    'name'      => $::teamcity::agent_name
+    'name'      => $::teamcity::agent_name,
   }
 
   # configure buildAgent.properties
@@ -26,31 +26,6 @@ class teamcity::agent::config {
     }
   }
   else {
-    case $::teamcity::service_run_type {
-      'init': {
-        file { '/etc/init.d/build-agent':
-          ensure  => 'present',
-          owner   => 'root',
-          group   => 'root',
-          mode    => '0755',
-          content => template("${module_name}/build-agent.erb"),
-        }
-      }
-      'systemd': {
-        file { '/lib/systemd/system/build-agent.service':
-          ensure  => 'present',
-          owner   => 'root',
-          group   => 'root',
-          mode    => '0755',
-          content => template("${module_name}/build-agent-service.erb"),
-          notify  => Exec["systemd_reload"]
-        }
-      }
-      default: {
-        fail("Unexpected service run type '${::teamcity::service_run_type}'!")
-      }
-    }
-
     file { '/etc/profile.d/teamcity.sh':
       owner   => 'root',
       group   => 'root',

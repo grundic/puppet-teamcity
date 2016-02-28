@@ -1,73 +1,35 @@
 # PRIVATE CLASS: do not call directly
 class teamcity::agent::service {
-  if $::kernel == 'windows' {
-    $agent_dir_win = regsubst($::teamcity::agent_dir, '/', '\\', 'G')
-    $shortcut_path = "C:\\Users\\${::teamcity::agent_user}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\TeamCity.lnk"
-
-    if $::teamcity::service_run_type == 'service' {
-      exec { 'install-teamcity-agent-service':
-        path    => $::path,
-        command => "\"${::teamcity::agent_dir}\\launcher\\bin\\TeamCityAgentService-windows-x86-32.exe\" --install ${::teamcity::agent_dir}\\launcher\\conf\\wrapper.conf",
-        unless  => 'sc query "TCBuildAgent"'
-      }
-
-      service { 'TCBuildAgent':
-        ensure  => $::teamcity::service_ensure,
-        enable  => $::teamcity::service_enable,
-        require => Exec['install-teamcity-agent-service'],
-      }
-
-      file { $shortcut_path:
-        ensure => absent
-      }
+  if is_array($teamcity::params::service_providers) {
+    # Verify the service provider given is in the array
+    if ! ($teamcity::service_provider in $teamcity::params::service_providers) {
+      fail("'${teamcity::service_provider}' is not a valid provider for '${::operatingsystem}'")
     }
-    elsif $::teamcity::service_run_type == 'standalone' {
-      exec { 'create-teamcity-agent-shortcut':
-        command   => template("${module_name}/create-shortcut.ps1"),
-        creates   => $shortcut_path,
-        provider  => 'powershell',
-        logoutput => true,
-      }
+    $real_service_provider = $teamcity::service_provider
+  } else {
+    # There is only one option so simply set it
+    $real_service_provider = $teamcity::params::service_providers
+  }
 
-      exec { 'uninstall-teamcity-agent-service':
-        path     => $::path,
-        command  => "cmd /c '\"${agent_dir_win}\\launcher\\bin\\TeamCityAgentService-windows-x86-32.exe\" --remove ${agent_dir_win}\\launcher\\conf\\wrapper.conf'",
-        unless   => template("${module_name}/check-service.ps1"),
-        provider => powershell,
-      }
+  case $real_service_provider {
+    'init': {
+      $class_name = 'initd'
     }
-    else {
-      fail("'service_run_type' must be either 'service' or 'standalone', but received '${::teamcity::service_run_type}'!")
+    'systemd': {
+      $class_name = 'systemd'
+    }
+    'service': {
+      $class_name = 'win_service'
+    }
+    'standalone': {
+      $class_name = 'win_service'
+    }
+    default: {
+      fail("Unknown service provider '${real_service_provider}'!")
     }
   }
-  else {
-    if $::teamcity::service_run_type == 'systemd' {
-      service { 'build-agent':
-        ensure     => $::teamcity::service_ensure,
-        enable     => $::teamcity::service_enable,
-        hasstatus  => true,
-        hasrestart => true,
-        provider   => $::teamcity::service_run_type,
-        require    => File['/lib/systemd/system/build-agent.service'],
-      }
-      exec { 'systemd_reload':
-        command     => '/bin/systemctl daemon-reload',
-        refreshonly => true,
-      }
-      file { '/etc/init.d/build-agent':
-        ensure  => absent,
-      }
-    } elsif $::teamcity::service_run_type == 'init' {
-      service { 'build-agent':
-        ensure     => $::teamcity::service_ensure,
-        enable     => $::teamcity::service_enable,
-        hasstatus  => true,
-        hasrestart => true,
-        require    => File['/etc/init.d/build-agent']
-      }
-      file { '/lib/systemd/system/build-agent.service':
-        ensure  => absent,
-      }
-    }
-  }
+
+  anchor { '::teamcity::agent::service::start': } ->
+  class{ "::teamcity::agent::service::${class_name}": } ->
+  anchor { '::teamcity::agent::service::end': }
 }

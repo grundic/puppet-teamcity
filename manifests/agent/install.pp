@@ -15,11 +15,11 @@ class teamcity::agent::install {
 
     download_file { 'Download Teamcity agent' :
       url                   => $download_url,
-      destination_directory => $::temp_dir
+      destination_directory => $::temp_dir,
     }
 
     file { $::teamcity::agent_dir:
-      ensure => directory
+      ensure => directory,
     }
 
     exec { 'extract-agent-archive':
@@ -27,16 +27,16 @@ class teamcity::agent::install {
       creates   => "${::teamcity::agent_dir}/conf",
       provider  => 'powershell',
       logoutput => true,
-      require   => [Download_file['Download Teamcity agent'], File[$::teamcity::agent_dir]]
+      require   => [Download_file['Download Teamcity agent'], File[$::teamcity::agent_dir]],
     }
 
     file {'agent-config':
-      ensure             => 'present',
+      ensure             => 'file',
       path               => "${::teamcity::agent_dir}/conf/buildAgent.properties",
       replace            => 'no',
       source             => "${::teamcity::agent_dir}/conf/buildAgent.dist.properties",
       source_permissions => ignore,
-      require            => Exec['extract-agent-archive']
+      require            => Exec['extract-agent-archive'],
     }
   }
   else {
@@ -51,17 +51,17 @@ class teamcity::agent::install {
       command   => "unzip ${::temp_dir}/${::teamcity::archive_name} -d ${::teamcity::agent_dir}",
       creates   => "${::teamcity::agent_dir}/conf",
       logoutput => 'on_failure',
-      require   => Wget::Fetch['teamcity-buildagent']
+      require   => Wget::Fetch['teamcity-buildagent'],
     }
 
     file {'agent-config':
-      ensure  => 'present',
+      ensure  => 'file',
       path    => "${::teamcity::agent_dir}/conf/buildAgent.properties",
       replace => 'no',
       source  => "${::teamcity::agent_dir}/conf/buildAgent.dist.properties",
       group   => $::teamcity::agent_group,
       owner   => $::teamcity::agent_user,
-      require => Exec['extract-agent-archive']
+      require => Exec['extract-agent-archive'],
     }
 
     exec { 'chown-agent-dir':
@@ -69,12 +69,12 @@ class teamcity::agent::install {
       subscribe   => Exec['extract-agent-archive'],
       refreshonly => true,
       logoutput   => 'on_failure',
-      require     => Exec['extract-agent-archive']
+      require     => Exec['extract-agent-archive'],
     }
 
     file { "${::teamcity::agent_dir}/bin/agent.sh":
       mode    => '0755',
-      require => Exec['extract-agent-archive']
+      require => Exec['extract-agent-archive'],
     }
   }
 }

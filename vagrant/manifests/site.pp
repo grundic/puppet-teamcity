@@ -7,13 +7,13 @@ if $::kernel == 'windows' {
     service_run_type      => 'standalone',
     agent_user            => 'vagrant',
     launcher_wrapper_conf => {
-      'wrapper.app.parameter.11' => '-Dfile.encoding=UTF-8'
-    }
+      'wrapper.app.parameter.11' => '-Dfile.encoding=UTF-8',
+    },
   }
 }
 else {
   package {'unzip':
-    ensure => installed
+    ensure => installed,
   }
 
   class { 'java':
@@ -25,12 +25,13 @@ else {
     server_url            => 'https://teamcity.jetbrains.com',
     manage_user           => true,
     manage_group          => true,
+    service_provider      => 'init',
     custom_properties     => {
         'ownPort'                   => '59090',
-        'system.teamcity.idea.home' => '%system.agent.home.dir%/tools/idea'
+        'system.teamcity.idea.home' => '%system.agent.home.dir%/tools/idea',
     },
     launcher_wrapper_conf => {
-      'wrapper.app.parameter.11' => '-Dfile.encoding=UTF-8'
-    }
+      'wrapper.app.parameter.11' => '-Dfile.encoding=UTF-8',
+    },
   }
 }
