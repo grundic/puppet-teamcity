@@ -29,7 +29,7 @@ class teamcity::params {
   case $::operatingsystem {
     'RedHat', 'CentOS', 'Fedora', 'Scientific', 'OracleLinux', 'SLC': {
       if versioncmp($::operatingsystemmajrelease, '7') >= 0 {
-        $service_providers = ['systemd', 'init']
+        $service_providers = 'systemd'
       } else {
         $service_providers = ['init']
       }
@@ -46,7 +46,7 @@ class teamcity::params {
     }
     'Ubuntu': {
       if versioncmp($::operatingsystemmajrelease, '15') >= 0 {
-        $service_providers = ['systemd', 'init']
+        $service_providers = 'systemd'
       } else {
         $service_providers = [ 'init' ]
       }
