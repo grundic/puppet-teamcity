@@ -90,16 +90,17 @@ Required service status. Defaults to `running`.
 ####`service_enable`
 Should the service be enabled. Defaults to `true`.
 
-####`service_run_type`
-The mode in which agent is executed: it could be `service` or `standalone`
-for Windows and `init` or `systemd` on Linux. On Windows system: if set
-to `service`, then agent is executed as regular windows service. In 
-standalone mode the shortcut is created in Startup forlder of specified
-user. This mode is required in some cases to overcome service's
+####`service_provider`
+This parameter determines how service would be executed. Depending on operating
+system there could be one or more choices.
+For modern Linux distributions `systemd` would be used (Ubuntu 15, CentOS 7),
+for more old ones `init` would be set.
+For Windows you can select two possibilities for agent run: `service`
+or `standalone`. If set to `service`, then agent is executed as regular windows
+service. In standalone mode the shortcut is created in Startup folder of
+specified user. This mode is required in some cases to overcome service's
 shortcomings (it could interact with desktop, so, it could not for
-example create direct3d device).
-Default on Windows is `service` and on Linux `init` or `systemd` depending
-on your OS version.
+example create Direct3d device).
 
 ####`teamcity_agent_mem_opts`
 String for configuring additional java parameters for build agent.

@@ -56,7 +56,7 @@
 #   Should the service be enabled
 #   Defaults to `true`.
 #
-# [*service_run_type*]
+# [*service_provider*]
 #   Service type
 #   On windows defaults to `service`, on Linux defaults to `init`.
 #

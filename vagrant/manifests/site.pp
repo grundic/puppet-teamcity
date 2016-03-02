@@ -4,7 +4,7 @@ if $::kernel == 'windows' {
 
   class {'teamcity':
     agent_dir             => 'C:/buildAgent',
-    service_run_type      => 'standalone',
+    service_provider      => 'standalone',
     agent_user            => 'vagrant',
     launcher_wrapper_conf => {
       'wrapper.app.parameter.11' => '-Dfile.encoding=UTF-8',
