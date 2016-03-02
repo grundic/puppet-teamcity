@@ -10,4 +10,5 @@ spec/fixtures/manifests
 spec/fixtures/modules
 spec/reports/
 spec/logs
+.idea
 
