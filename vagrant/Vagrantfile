@@ -1,24 +1,32 @@
 # -*- mode: ruby -*-
 # # vi: set ft=ruby :
 
-Vagrant.configure("2") do |config|
-  config.vm.define "ubuntu1204_64" do |ubuntu1204_64|
-    ubuntu1204_64.vm.box = "ubuntu/precise64"
-    ubuntu1204_64.vm.box_url = "https://vagrantcloud.com/ubuntu/precise64"
-    ubuntu1204_64.vm.provision :shell, :path => "upgrade-puppet.sh"
+Vagrant.configure('2') do |config|
+  config.vm.define 'ubuntu1204_64' do |ubuntu1204_64|
+    ubuntu1204_64.vm.box = 'ubuntu/precise64'
+    ubuntu1204_64.vm.box_url = 'https://vagrantcloud.com/ubuntu/precise64'
+    ubuntu1204_64.vm.provision :shell, :path => 'upgrade-puppet.sh'
   end
 
-  config.vm.define "ubuntu1404_64" do |ubuntu1404_64|
-    ubuntu1404_64.vm.box = "ubuntu/trusty64"
-    ubuntu1404_64.vm.box_url = "https://vagrantcloud.com/ubuntu/trusty64"
+  config.vm.define 'ubuntu1404_64' do |ubuntu1404_64|
+    ubuntu1404_64.vm.box = 'ubuntu/trusty64'
+    ubuntu1404_64.vm.box_url = 'https://vagrantcloud.com/ubuntu/trusty64'
 
-    ubuntu1404_64.vm.synced_folder "manifests", "/etc/puppet/manifests"
-    ubuntu1404_64.vm.synced_folder "..", "/etc/puppet/modules/teamcity"
+    ubuntu1404_64.vm.synced_folder 'manifests', '/etc/puppet/manifests'
+    ubuntu1404_64.vm.synced_folder '..', '/etc/puppet/modules/teamcity'
   end
 
-  config.vm.define "win7_pro_64" do |win7_pro_64|
-    win7_pro_64.vm.box = "ferventcoder/win7pro-x64-nocm-lite"
-    win7_pro_64.vm.box_url = "https://vagrantcloud.com/ferventcoder/win7pro-x64-nocm-lite"
+  config.vm.define 'ubuntu1510_64' do |ubuntu1510_64|
+    ubuntu1510_64.vm.box = 'ubuntu/wily64'
+    ubuntu1510_64.vm.box_url = 'https://vagrantcloud.com/ubuntu/boxes/wily64'
+
+    ubuntu1510_64.vm.synced_folder 'manifests', '/etc/puppet/manifests'
+    ubuntu1510_64.vm.synced_folder '..', '/etc/puppet/modules/teamcity'
+  end
+
+  config.vm.define 'win7_pro_64' do |win7_pro_64|
+    win7_pro_64.vm.box = 'ferventcoder/win7pro-x64-nocm-lite'
+    win7_pro_64.vm.box_url = 'https://vagrantcloud.com/ferventcoder/win7pro-x64-nocm-lite'
 
     #win7_pro_64.vm.guest = :windows
     #win7_pro_64.vm.communicator = "winrm"
@@ -27,10 +35,10 @@ Vagrant.configure("2") do |config|
     #win7_pro_64.winrm.username = "vagrant"
     #win7_pro_64.winrm.password = "vagrant"
 
-    config.vm.provider "virtualbox" do |vb|
+    config.vm.provider 'virtualbox' do |vb|
         vb.gui = true
-        vb.customize ["modifyvm", :id, "--memory", "1024"]
-        vb.customize ["modifyvm", :id, "--clipboard", "bidirectional"]
+        vb.customize ['modifyvm', :id, '--memory', '1024']
+        vb.customize ['modifyvm', :id, '--clipboard', 'bidirectional']
     end
   end
 end
