@@ -1,5 +1,9 @@
 [![Build Status](https://travis-ci.org/grundic/puppet-teamcity.svg?branch=master)](https://travis-ci.org/grundic/puppet-teamcity)
 
+## NOT MAINTAINED ANYMORE
+This project is not maintained anymore by the author.
+If you're interested in updating/volunteering, please let me know.
+
 ## Overview
 ![Transformation](https://raw.githubusercontent.com/grundic/puppet-teamcity/master/puppet-teamcity.gif?raw=true)
 This Puppet module installs and configures TeamCity build agent (https://www.jetbrains.com/teamcity).
